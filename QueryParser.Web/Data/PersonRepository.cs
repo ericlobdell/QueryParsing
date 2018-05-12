@@ -13,25 +13,18 @@ namespace QueryParser.Web.Data
             _db = db;
         }
 
-        public int Add(Person person)
+        public void Add(params Person[] persons)
         {
-            _db.Person.Add( person );
+            _db.Person.AddRange( persons );
             _db.SaveChanges();
 
-            return person.Id;
         }
 
         public IEnumerable<Person> Get( FilterablePersonRequest request)
         {
             var query = _db.Person.AsQueryable();
 
-            foreach ( var filter in request.Filters )
-            {
-                query = query.Where( p => p
-                    .GetType()
-                    .GetProperty( filter.PropertyName )
-                    .GetValue( p ).ToString() == filter.Value ); 
-            }
+            query = QueryBuilder.MapFiltersToQuery( request.Filters, query );
 
             return query.ToList();
         }
