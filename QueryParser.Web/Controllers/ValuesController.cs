@@ -11,9 +11,9 @@ namespace QueryParser.Web.Controllers
     {
         // GET api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult Get(FilterablePersonRequest req)
         {
-            return new string[] { "value1", "value2" };
+            return Ok( req.GetFilters() );
         }
 
         // GET api/values/5

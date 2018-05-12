@@ -8,7 +8,7 @@ namespace QueryParser.Web
         
     }
 
-    public interface IFilterable
+    public interface IFilteredRequest
     {
         IEnumerable<QueryFilter> GetFilters();
         void SetQueryParams( IEnumerable<KeyValuePair<string, StringValues>> queryParams );

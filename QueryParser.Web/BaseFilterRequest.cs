@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace QueryParser.Web
 {
-    public class BaseFilterRequest<T> : IFilterable
+    public class BaseFilterRequest<T> : IFilteredRequest
     {
         IEnumerable<KeyValuePair<string, StringValues>> _queryParams = new List<KeyValuePair<string, StringValues>>();
 
