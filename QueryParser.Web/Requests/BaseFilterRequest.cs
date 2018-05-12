@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace QueryParser.Web
+namespace QueryParser.Web.Requests
 {
-    public class BaseFilterRequest<T> : IFilteredRequest
+    public class BaseFilterRequest<T> : IFilterableRequest
     {
         IEnumerable<KeyValuePair<string, StringValues>> _queryParams = new List<KeyValuePair<string, StringValues>>();
 
@@ -13,6 +13,8 @@ namespace QueryParser.Web
         {
             _queryParams = queryParams;
         }
+
+        public IEnumerable<QueryFilter> Filters => GetFilters();
 
         public IEnumerable<QueryFilter> GetFilters()
         {
@@ -25,7 +27,7 @@ namespace QueryParser.Web
                     string.Equals( p, pair.Key, StringComparison.InvariantCultureIgnoreCase ) ) )
                 .Select( pair => new QueryFilter
                 {
-                    Key = propertyNames.Where( p =>
+                    PropertyName = propertyNames.Where( p =>
                          string.Equals( p, pair.Key, StringComparison.InvariantCultureIgnoreCase ) ).First(),
                     Value = pair.Value.ToString()
                 } );

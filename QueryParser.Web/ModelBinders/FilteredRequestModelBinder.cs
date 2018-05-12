@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using QueryParser.Web.Requests;
 using System;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ namespace QueryParser.Web.ModelBinders
     {
         public Task BindModelAsync( ModelBindingContext bindingContext )
         {
-            var model = Activator.CreateInstance(bindingContext.ModelMetadata.ModelType) as IFilteredRequest;
+            var model = Activator.CreateInstance(bindingContext.ModelMetadata.ModelType) as IFilterableRequest;
 
             if ( model == null )
                 return Task.CompletedTask;
