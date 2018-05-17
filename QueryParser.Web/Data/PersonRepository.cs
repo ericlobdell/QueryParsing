@@ -15,16 +15,16 @@ namespace QueryParser.Web.Data
 
         public void Add(params Person[] persons)
         {
-            _db.Person.AddRange( persons );
+            _db.Person.AddRange(persons);
             _db.SaveChanges();
 
         }
 
-        public IEnumerable<Person> Get( FilterablePersonRequest request)
+        public IEnumerable<Person> Get(FilterablePersonRequest request)
         {
             var query = _db.Person.AsQueryable();
 
-            query = QueryBuilder.MapFiltersToQuery( request.Filters, query );
+            query = QueryBuilder.MapFiltersToQuery(request.Filters, query);
 
             return query.ToList();
         }

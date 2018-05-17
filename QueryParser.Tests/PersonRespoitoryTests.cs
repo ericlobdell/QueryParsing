@@ -15,12 +15,12 @@ namespace QueryParser.Tests
         private PersonRepository GetSut()
         {
             var options = new DbContextOptionsBuilder<TestContext>()
-                .UseInMemoryDatabase( databaseName: "test" )
+                .UseInMemoryDatabase(databaseName: "test")
                 .Options;
 
-            return new PersonRepository( new TestContext( options ) );
+            return new PersonRepository(new TestContext(options));
         }
-        
+
         [Fact]
         public void Get_applies_filters_to_query()
         {
@@ -35,17 +35,17 @@ namespace QueryParser.Tests
             };
 
             var sut = GetSut();
-            sut.Add( david, tom );
+            sut.Add(david, tom);
 
             var queryString = $"?name={tom.Name}&foo=bar";
-            var parsedQuery = QueryHelpers.ParseQuery( queryString );
+            var parsedQuery = QueryHelpers.ParseQuery(queryString);
             var request = new FilterablePersonRequest();
-            request.SetQueryParams( parsedQuery );
+            request.SetQueryParams(parsedQuery);
 
-            var results = sut.Get( request );
+            var results = sut.Get(request);
 
-            Assert.Contains( results, p => p.Name == tom.Name );
-            Assert.DoesNotContain( results, p => p.Name == david.Name );
+            Assert.Contains(results, p => p.Name == tom.Name);
+            Assert.DoesNotContain(results, p => p.Name == david.Name);
         }
     }
 }

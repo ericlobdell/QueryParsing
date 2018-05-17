@@ -5,32 +5,68 @@ using System.Linq;
 
 namespace QueryParser.Web.Requests
 {
-    public class BaseFilterRequest<T> : IFilterableRequest
+    public class BaseFilterRequest<T>: IFilterableRequest
     {
         IEnumerable<KeyValuePair<string, StringValues>> _queryParams = new List<KeyValuePair<string, StringValues>>();
+        IEnumerable<string> _propertyNames;
 
-        public void SetQueryParams( IEnumerable<KeyValuePair<string, StringValues>> queryParams )
+        public void SetQueryParams(IEnumerable<KeyValuePair<string, StringValues>> queryParams)
         {
             _queryParams = queryParams;
+            _propertyNames = typeof(T)
+                .GetProperties()
+                .Select(p => p.Name);
         }
 
         public IEnumerable<QueryFilter> Filters => GetFilters();
+        public IEnumerable<QuerySort> Sorts => GetSorts();
+
+        private IEnumerable<QuerySort> GetSorts()
+        {
+            var sort = new List<QuerySort>(); ;
+            var sortParam = _queryParams
+                .Where(p => p.Key.ToLower() == "sort");
+
+            if ( !sortParam.Any() )
+                return sort;
+
+            var sorts = sortParam
+                .First()
+                .Value
+                .ToString()
+                .Split(',');
+
+            sort = sorts
+                .Select((pair, index) =>
+                {
+                    var parts = pair.Split(':');
+                    var propName = GetPropertyName(parts[0]);
+                    var sortDir = parts.Length == 2 ? parts[1] : "asc";
+
+                    return new QuerySort(propName, index, sortDir);
+                })
+                .Where(s => s.IsValid)
+                .ToList();
+
+            return sort;
+        }
+
+        private string GetPropertyName(string test) => _propertyNames
+            .Where(p => string.Equals(p, test, StringComparison.InvariantCultureIgnoreCase))
+            .FirstOrDefault();
+
+        private bool IsPropertyName(string test) => _propertyNames
+            .Any(p => string.Equals(p, test, StringComparison.InvariantCultureIgnoreCase));
 
         public IEnumerable<QueryFilter> GetFilters()
         {
-            var propertyNames = typeof( T )
-                .GetProperties()
-                .Select( p => p.Name );
-
             return _queryParams
-                .Where( pair => propertyNames.Any( p =>
-                    string.Equals( p, pair.Key, StringComparison.InvariantCultureIgnoreCase ) ) )
-                .Select( pair => new QueryFilter
+                .Where(pair => IsPropertyName(pair.Key))
+                .Select(pair => new QueryFilter
                 {
-                    PropertyName = propertyNames.Where( p =>
-                         string.Equals( p, pair.Key, StringComparison.InvariantCultureIgnoreCase ) ).First(),
+                    PropertyName = GetPropertyName(pair.Key),
                     Value = pair.Value.ToString()
-                } );
+                });
         }
     }
 }
