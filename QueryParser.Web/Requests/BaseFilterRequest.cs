@@ -18,6 +18,9 @@ namespace QueryParser.Web.Requests
                 .Select(p => p.Name);
         }
 
+        public bool HasFilters => Filters.Any();
+        public bool HasSort => Sorts.Any();
+
         public IEnumerable<QueryFilter> Filters => GetFilters();
         public IEnumerable<QuerySort> Sorts => GetSorts();
 

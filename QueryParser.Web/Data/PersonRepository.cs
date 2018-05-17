@@ -22,9 +22,10 @@ namespace QueryParser.Web.Data
 
         public IEnumerable<Person> Get(FilterablePersonRequest request)
         {
-            var query = _db.Person.AsQueryable();
-
-            query = QueryBuilder.MapFiltersToQuery(request.Filters, query);
+            var query = new QueryBuilder<Person>(_db.Person)
+                .Filter(request.Filters)
+                .Sort(request.Sorts)
+                .Build();
 
             return query.ToList();
         }

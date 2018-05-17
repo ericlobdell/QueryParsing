@@ -3,9 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using QueryParser.Web.Data;
 using QueryParser.Web.Models;
 using QueryParser.Web.Requests;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace QueryParser.Tests
