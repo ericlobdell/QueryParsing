@@ -48,7 +48,7 @@ namespace QueryParser.Web.Requests
 
                     return new QuerySort(propName, index, sortDir);
                 })
-                .Where(s => s.IsValid)
+                .Where(s => IsPropertyName(s.PropertyName))
                 .ToList();
 
             return sort;

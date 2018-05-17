@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using QueryParser.Web.Models;
 
 namespace QueryParser.Web.Data
 {
@@ -39,9 +37,7 @@ namespace QueryParser.Web.Data
             var orderedQuery = ApplyOrderBy(firstSort);
 
             foreach ( var s in remainingSorts )
-            {
                 orderedQuery = ApplyThenBy(s);
-            }
 
             _query = orderedQuery.AsQueryable();
 

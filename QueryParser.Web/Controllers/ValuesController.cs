@@ -8,9 +8,17 @@ namespace QueryParser.Web.Controllers
     {
         // GET api/values
         [HttpGet]
+        [Route("person")]
         public IActionResult Get(FilterablePersonRequest req)
         {
-            return Ok( req.GetFilters() );
+            return Ok( req );
+        }
+
+        [HttpGet]
+        [Route("building")]
+        public IActionResult Get(FilterableBuildingRequest req)
+        {
+            return Ok(req);
         }
 
         // GET api/values/5

@@ -6,4 +6,9 @@ namespace QueryParser.Web.Requests
     {
         
     }
+
+    public class FilterableBuildingRequest: BaseFilterRequest<Building>
+    {
+
+    }
 }

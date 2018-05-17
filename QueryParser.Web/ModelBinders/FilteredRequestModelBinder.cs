@@ -18,6 +18,7 @@ namespace QueryParser.Web.ModelBinders
             model.SetQueryParams(query);
 
             bindingContext.Result = ModelBindingResult.Success(model);
+
             return Task.CompletedTask;
         }
     }

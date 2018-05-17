@@ -5,7 +5,6 @@
         public string PropertyName { get; }
         public SortDirection SortDirection { get; }
         public int SortPosition { get; }
-        public bool IsValid => !string.IsNullOrWhiteSpace(PropertyName);
 
         public QuerySort(string propName, int sortPosition, string sortDir = "asc")
         {
