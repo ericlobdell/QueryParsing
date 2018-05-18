@@ -13,9 +13,7 @@ namespace QueryParser.Web.Requests
         public void SetQueryParams(IEnumerable<KeyValuePair<string, StringValues>> queryParams)
         {
             _queryParams = queryParams;
-            _propertyNames = typeof(T)
-                .GetProperties()
-                .Select(p => p.Name);
+            _propertyNames = GetPropertyPaths(typeof(T));
         }
 
         public bool HasFilters => Filters.Any();
@@ -54,12 +52,18 @@ namespace QueryParser.Web.Requests
             return sort;
         }
 
+        bool PropertyNameComparisonPredicate(string prop, string test)
+        {
+            var parts = prop.Split(".");
+            return parts.Any(p => string.Equals(p, test, StringComparison.InvariantCultureIgnoreCase));
+        }
+
         private string GetPropertyName(string test) => _propertyNames
-            .Where(p => string.Equals(p, test, StringComparison.InvariantCultureIgnoreCase))
+            .Where(prop => PropertyNameComparisonPredicate(prop, test))
             .FirstOrDefault();
 
         private bool IsPropertyName(string test) => _propertyNames
-            .Any(p => string.Equals(p, test, StringComparison.InvariantCultureIgnoreCase));
+            .Any(prop => PropertyNameComparisonPredicate(prop, test));
 
         public IEnumerable<QueryFilter> GetFilters()
         {
@@ -73,19 +77,26 @@ namespace QueryParser.Web.Requests
         }
 
 
-        public void PrintProperties(Type type, string parent = "")
+        public List<string> GetPropertyPaths(Type t)
         {
-            var properties = type.GetProperties();
-
-            foreach ( var property in properties )
+            List<string> GetPaths(Type type, string parent, List<string> paths)
             {
-                var path = string.IsNullOrWhiteSpace(parent) ? property.Name : $"{parent}.{property.Name}";
+                var properties = type.GetProperties();
 
-                if ( property.PropertyType.Assembly == type.Assembly )
-                    PrintProperties(property.PropertyType, path);
+                foreach ( var property in properties )
+                {
+                    var path = string.IsNullOrWhiteSpace(parent) ? property.Name : $"{parent}.{property.Name}";
 
-                Console.WriteLine(path);
+                    if ( property.PropertyType.Assembly == type.Assembly )
+                        GetPaths(property.PropertyType, path, paths);
+
+                    else paths.Add(path);
+                }
+
+                return paths;
             }
+
+            return GetPaths(t, "", new List<string>());
         }
     }
 }
