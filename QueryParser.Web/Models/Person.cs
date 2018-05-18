@@ -8,5 +8,12 @@
 
         public int GetId() => Id;
         private string Secret { get; set; }
+        public Foo Foo { get; set; }
+    }
+
+    public class Foo
+    {
+        public string Bar { get; set; }
+        public int Baz { get; set; }
     }
 }

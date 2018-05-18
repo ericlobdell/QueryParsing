@@ -71,5 +71,21 @@ namespace QueryParser.Web.Requests
                     Value = pair.Value.ToString()
                 });
         }
+
+
+        public void PrintProperties(Type type, string parent = "")
+        {
+            var properties = type.GetProperties();
+
+            foreach ( var property in properties )
+            {
+                var path = string.IsNullOrWhiteSpace(parent) ? property.Name : $"{parent}.{property.Name}";
+
+                if ( property.PropertyType.Assembly == type.Assembly )
+                    PrintProperties(property.PropertyType, path);
+
+                Console.WriteLine(path);
+            }
+        }
     }
 }
