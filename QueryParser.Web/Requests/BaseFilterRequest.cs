@@ -85,18 +85,44 @@ namespace QueryParser.Web.Requests
 
                 foreach ( var property in properties )
                 {
-                    var path = string.IsNullOrWhiteSpace(parent) ? property.Name : $"{parent}.{property.Name}";
+                    var path = string.IsNullOrWhiteSpace(parent) 
+                        ? property.Name 
+                        : $"{parent}.{property.Name}";
 
                     if ( property.PropertyType.Assembly == type.Assembly )
                         GetPaths(property.PropertyType, path, paths);
 
-                    else paths.Add(path);
+                    paths.Add(path);
                 }
 
                 return paths;
             }
 
             return GetPaths(t, "", new List<string>());
+        }
+    }
+
+    public static class ReflectionHelper
+    {
+        public static Object GetPropValue(this Object obj, String propName)
+        {
+            var nameParts = propName.Split('.');
+            if ( nameParts.Length == 1 )
+            {
+                return obj.GetType().GetProperty(propName).GetValue(obj, null);
+            }
+
+            foreach ( String part in nameParts )
+            {
+                if ( obj == null ) { return null; }
+
+                var type = obj.GetType();
+                var info = type.GetProperty(part);
+                if ( info == null ) { return null; }
+
+                obj = info.GetValue(obj, null);
+            }
+            return obj;
         }
     }
 }
