@@ -37,6 +37,7 @@ namespace QueryParser.Tests
             sut.Add(david, tom);
 
             var queryString = $"?name={tom.Name}&bar={tom.Foo.Bar}";
+           // var queryString = $"?sort=bar";
             var parsedQuery = QueryHelpers.ParseQuery(queryString);
             var request = new FilterablePersonRequest();
             request.SetQueryParams(parsedQuery);

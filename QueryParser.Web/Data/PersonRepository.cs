@@ -17,7 +17,6 @@ namespace QueryParser.Web.Data
         {
             _db.Person.AddRange(persons);
             _db.SaveChanges();
-
         }
 
         public IEnumerable<Person> Get(FilterablePersonRequest request)
