@@ -9,6 +9,7 @@ namespace QueryParser.Web.Data
             : base( options ) { }
 
         public DbSet<Person> Person { get; set; }
+        public DbSet<Foo> Foo { get; set; }
 
         protected override void OnConfiguring( DbContextOptionsBuilder optionsBuilder )
         {

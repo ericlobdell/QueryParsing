@@ -23,18 +23,20 @@ namespace QueryParser.Tests
         {
             var david = new Person
             {
-                Name = "David"
+                Name = "David",
+                Foo = new Foo { Bar = "a" }
             };
 
             var tom = new Person
             {
-                Name = "Tom"
+                Name = "Tom",
+                Foo = new Foo { Bar = "b" }
             };
 
             var sut = GetSut();
             sut.Add(david, tom);
 
-            var queryString = $"?name={tom.Name}&foo=bar";
+            var queryString = $"?name={tom.Name}&bar={tom.Foo.Bar}";
             var parsedQuery = QueryHelpers.ParseQuery(queryString);
             var request = new FilterablePersonRequest();
             request.SetQueryParams(parsedQuery);
