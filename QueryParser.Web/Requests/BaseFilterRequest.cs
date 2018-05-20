@@ -50,14 +50,14 @@ namespace QueryParser.Web.Requests
                 .Split(',');
 
             sort = sorts
-                .Select((pair, position) =>
+                .Select((pair, sortPosition) =>
                 {
                     var parts = pair.Split(':');
                     var sortField = parts[0].ToLower();
-                    var sortDir = parts.Length == 2 ? parts[1] : "asc";
+                    var sortDirection = parts.Length == 2 ? parts[1] : "asc";
 
-                    if ( SortKeySelectorMap.TryGetValue(sortField, out var selector) )
-                        return new SortCriteria<T>(position, selector, sortDir);
+                    if ( SortKeySelectorMap.TryGetValue(sortField, out var keySelector) )
+                        return new SortCriteria<T>(sortPosition, keySelector, sortDirection);
 
                     return null;
                 })
