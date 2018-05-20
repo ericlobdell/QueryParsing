@@ -12,6 +12,8 @@ namespace QueryParser.Web.Requests
         IEnumerable<KeyValuePair<string, StringValues>> _queryParams = new List<KeyValuePair<string, StringValues>>();
         IEnumerable<string> _propertyPaths;
 
+        public abstract Dictionary<string, Func<T, object, bool>> FilterPredicateMap { get; }
+        public abstract Dictionary<string, Expression<Func<T, object>>> SortKeySelectorMap { get; }
 
         public void SetQueryParams(IEnumerable<KeyValuePair<string, StringValues>> queryParams)
         {
@@ -26,11 +28,8 @@ namespace QueryParser.Web.Requests
             .Select(q => new FilterCirteria<T>(q.Value, FilterPredicateMap.GetValueOrDefault(q.Key)));
 
         public IEnumerable<SortCriteria<T>> SortCriteria => GetSorts();
-            
-        public abstract Dictionary<string, Func<T, object ,bool>> FilterPredicateMap { get; }
-        public abstract Dictionary<string, Expression<Func<T,object>>> SortKeySelectorMap { get; }
 
-        protected IEnumerable<SortCriteria<T>> GetSorts()
+        private IEnumerable<SortCriteria<T>> GetSorts()
         {
             var sort = new List<SortCriteria<T>>(); ;
             var sortParam = _queryParams
