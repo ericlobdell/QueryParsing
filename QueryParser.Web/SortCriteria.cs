@@ -1,16 +1,19 @@
-﻿namespace QueryParser.Web
+﻿using System;
+using System.Linq.Expressions;
+
+namespace QueryParser.Web
 {
-    public class SortCriteria
+    public class SortCriteria<T>
     {
-        public string PropertyName { get; }
         public SortDirection SortDirection { get; }
         public int SortPosition { get; }
+        public Expression<Func<T, object>> KeySelector { get; }
 
-        public SortCriteria(string propName, int sortPosition, string sortDir = "asc")
+        public SortCriteria(int sortPosition, Expression<Func<T, object>> selector, string sortDir = "asc")
         {
-            PropertyName = propName;
             SortDirection = sortDir == "desc" ? SortDirection.Descending : SortDirection.Ascending;
             SortPosition = sortPosition;
+            KeySelector = selector;
         }
     }
 

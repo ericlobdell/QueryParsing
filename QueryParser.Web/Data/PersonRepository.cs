@@ -23,7 +23,7 @@ namespace QueryParser.Web.Data
         {
             var query = new QueryBuilder<Person>(_db.Person)
                 .Filter(request.Filters)
-                .Sort(request.Sorts)
+                .Sort(request.SortCriteria)
                 .Build();
 
             return query.ToList();

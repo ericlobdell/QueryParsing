@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace QueryParser.Web
 {
-    public class FilterCirteria
+    public class FilterCirteria<T>
     {
-        public string PropertyPath { get; set; }
-        public Func<object, object, bool> Predicate { get; set; }
-        public object Value { get; set; }
-    }
+        public Func<T, object, bool> Predicate { get; }
+        public object Value { get; }
 
-    public struct FilterPredicate : Func<object,object,bool>
-    {
-
+        public FilterCirteria(object value, Func<T, object, bool> predicate)
+        {
+            Value = value;
+            Predicate = predicate;
+        }
     }
 }

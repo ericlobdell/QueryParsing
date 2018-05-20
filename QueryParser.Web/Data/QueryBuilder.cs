@@ -1,6 +1,4 @@
-﻿using QueryParser.Web.ModelBinders;
-using QueryParser.Web.Requests;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace QueryParser.Web.Data
@@ -14,7 +12,7 @@ namespace QueryParser.Web.Data
             _query = query;
         }
 
-        public QueryBuilder<T> Filter(IEnumerable<FilterCirteria> filters)
+        public QueryBuilder<T> Filter(IEnumerable<FilterCirteria<T>> filters)
         {
             foreach ( var filter in filters )
                 _query = _query.Where(p => filter.Predicate(p, filter.Value));
@@ -22,7 +20,7 @@ namespace QueryParser.Web.Data
             return this;
         }
 
-        public QueryBuilder<T> Sort(IEnumerable<SortCriteria> sorts)
+        public QueryBuilder<T> Sort(IEnumerable<SortCriteria<T>> sorts)
         {
             if ( !sorts.Any() )
                 return this;
@@ -38,13 +36,13 @@ namespace QueryParser.Web.Data
 
             _query = orderedQuery.AsQueryable();
 
-            IOrderedQueryable<T> ApplyOrderBy(SortCriteria sort) => sort.SortDirection == SortDirection.Ascending ?
-                _query.OrderBy(x => x.GetPropValue(sort.PropertyName)) :
-                _query.OrderByDescending(x => x.GetPropValue(sort.PropertyName));
+            IOrderedQueryable<T> ApplyOrderBy(SortCriteria<T> sort) => sort.SortDirection == SortDirection.Ascending ?
+                _query.OrderBy(sort.KeySelector) :
+                _query.OrderByDescending(sort.KeySelector);
 
-            IOrderedQueryable<T> ApplyThenBy(SortCriteria sort) => sort.SortDirection == SortDirection.Ascending ?
-                orderedQuery.ThenBy(x => x.GetPropValue(sort.PropertyName)) :
-                orderedQuery.ThenByDescending(x => x.GetPropValue(sort.PropertyName));
+            IOrderedQueryable<T> ApplyThenBy(SortCriteria<T> sort) => sort.SortDirection == SortDirection.Ascending ?
+                orderedQuery.ThenBy(sort.KeySelector) :
+                orderedQuery.ThenByDescending(sort.KeySelector);
 
             return this;
         }

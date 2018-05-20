@@ -3,6 +3,7 @@ using QueryParser.Web.ModelBinders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace QueryParser.Web.Requests
 {
@@ -15,19 +16,23 @@ namespace QueryParser.Web.Requests
         public void SetQueryParams(IEnumerable<KeyValuePair<string, StringValues>> queryParams)
         {
             _queryParams = queryParams;
-            _propertyPaths = typeof(T).GetPropertyPaths();
         }
 
         public bool HasFilters => Filters.Any();
-        public bool HasSort => Sorts.Any();
+        public bool HasSort => SortCriteria.Any();
 
-        public IEnumerable<FilterCirteria> Filters => GetFilters().Where(f => FilterPredicateMap.ContainsKey(f.PropertyPath));
-        public IEnumerable<SortCriteria> Sorts { get; }
+        public IEnumerable<FilterCirteria<T>> Filters => _queryParams
+            .Where(f => FilterPredicateMap.ContainsKey(f.Key))
+            .Select(q => new FilterCirteria<T>(q.Value, FilterPredicateMap.GetValueOrDefault(q.Key)));
+
+        public IEnumerable<SortCriteria<T>> SortCriteria => GetSorts();
+            
         public abstract Dictionary<string, Func<T, object ,bool>> FilterPredicateMap { get; }
+        public abstract Dictionary<string, Expression<Func<T,object>>> SortKeySelectorMap { get; }
 
-        protected IEnumerable<SortCriteria> GetSorts()
+        protected IEnumerable<SortCriteria<T>> GetSorts()
         {
-            var sort = new List<SortCriteria>(); ;
+            var sort = new List<SortCriteria<T>>(); ;
             var sortParam = _queryParams
                 .Where(p => p.Key.ToLower() == "sort");
 
@@ -41,42 +46,21 @@ namespace QueryParser.Web.Requests
                 .Split(',');
 
             sort = sorts
-                .Select((pair, index) =>
+                .Select((pair, position) =>
                 {
                     var parts = pair.Split(':');
-                    var propName = GetPropertyName(parts[0]);
+                    var sortField = parts[0];
                     var sortDir = parts.Length == 2 ? parts[1] : "asc";
 
-                    return new SortCriteria(propName, index, sortDir);
+                    if ( SortKeySelectorMap.TryGetValue(sortField, out var selector) )
+                        return new SortCriteria<T>(position, selector, sortDir);
+
+                    return null;
                 })
-                .Where(s => IsPropertyName(s.PropertyName))
+                .Where(s => s != null)
                 .ToList();
 
             return sort;
-        }
-
-        bool PropertyNameComparisonPredicate(string prop, string test)
-        {
-            var parts = prop.Split(".");
-            return parts.Any(p => string.Equals(p, test, StringComparison.InvariantCultureIgnoreCase));
-        }
-
-        private string GetPropertyName(string test) => _propertyPaths
-            .Where(prop => PropertyNameComparisonPredicate(prop, test))
-            .FirstOrDefault();
-
-        private bool IsPropertyName(string test) => _propertyPaths
-            .Any(prop => PropertyNameComparisonPredicate(prop, test));
-
-        public IEnumerable<FilterCirteria> GetFilters()
-        {
-            return _queryParams
-                .Where(pair => IsPropertyName(pair.Key))
-                .Select(pair => new FilterCirteria
-                {
-                    PropertyPath = GetPropertyName(pair.Key),
-                    Value = pair.Value.ToString()
-                });
         }
     }
 }
