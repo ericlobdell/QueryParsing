@@ -1,30 +1,33 @@
 ﻿using Microsoft.Extensions.Primitives;
+using QueryParser.Web.ModelBinders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace QueryParser.Web.Requests
 {
-    public class BaseFilterRequest<T>: IFilterableRequest
+    public abstract class BaseFilterRequest<T>: IFilterableRequest
     {
         IEnumerable<KeyValuePair<string, StringValues>> _queryParams = new List<KeyValuePair<string, StringValues>>();
-        IEnumerable<string> _propertyNames;
+        IEnumerable<string> _propertyPaths;
+
 
         public void SetQueryParams(IEnumerable<KeyValuePair<string, StringValues>> queryParams)
         {
             _queryParams = queryParams;
-            _propertyNames = GetPropertyPaths(typeof(T));
+            _propertyPaths = typeof(T).GetPropertyPaths();
         }
 
         public bool HasFilters => Filters.Any();
         public bool HasSort => Sorts.Any();
 
-        public IEnumerable<QueryFilter> Filters => GetFilters();
-        public IEnumerable<QuerySort> Sorts => GetSorts();
+        public IEnumerable<FilterCirteria> Filters => GetFilters().Where(f => FilterPredicateMap.ContainsKey(f.PropertyPath));
+        public IEnumerable<SortCriteria> Sorts { get; }
+        public abstract Dictionary<string, Func<T, object ,bool>> FilterPredicateMap { get; }
 
-        private IEnumerable<QuerySort> GetSorts()
+        protected IEnumerable<SortCriteria> GetSorts()
         {
-            var sort = new List<QuerySort>(); ;
+            var sort = new List<SortCriteria>(); ;
             var sortParam = _queryParams
                 .Where(p => p.Key.ToLower() == "sort");
 
@@ -44,7 +47,7 @@ namespace QueryParser.Web.Requests
                     var propName = GetPropertyName(parts[0]);
                     var sortDir = parts.Length == 2 ? parts[1] : "asc";
 
-                    return new QuerySort(propName, index, sortDir);
+                    return new SortCriteria(propName, index, sortDir);
                 })
                 .Where(s => IsPropertyName(s.PropertyName))
                 .ToList();
@@ -58,71 +61,22 @@ namespace QueryParser.Web.Requests
             return parts.Any(p => string.Equals(p, test, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        private string GetPropertyName(string test) => _propertyNames
+        private string GetPropertyName(string test) => _propertyPaths
             .Where(prop => PropertyNameComparisonPredicate(prop, test))
             .FirstOrDefault();
 
-        private bool IsPropertyName(string test) => _propertyNames
+        private bool IsPropertyName(string test) => _propertyPaths
             .Any(prop => PropertyNameComparisonPredicate(prop, test));
 
-        public IEnumerable<QueryFilter> GetFilters()
+        public IEnumerable<FilterCirteria> GetFilters()
         {
             return _queryParams
                 .Where(pair => IsPropertyName(pair.Key))
-                .Select(pair => new QueryFilter
+                .Select(pair => new FilterCirteria
                 {
-                    PropertyName = GetPropertyName(pair.Key),
+                    PropertyPath = GetPropertyName(pair.Key),
                     Value = pair.Value.ToString()
                 });
-        }
-
-
-        public List<string> GetPropertyPaths(Type t)
-        {
-            List<string> GetPaths(Type type, string parent, List<string> paths)
-            {
-                var properties = type.GetProperties();
-
-                foreach ( var property in properties )
-                {
-                    var path = string.IsNullOrWhiteSpace(parent) 
-                        ? property.Name 
-                        : $"{parent}.{property.Name}";
-
-                    if ( property.PropertyType.Assembly == type.Assembly )
-                        GetPaths(property.PropertyType, path, paths);
-
-                    paths.Add(path);
-                }
-
-                return paths;
-            }
-
-            return GetPaths(t, "", new List<string>());
-        }
-    }
-
-    public static class ReflectionHelper
-    {
-        public static Object GetPropValue(this Object obj, String propName)
-        {
-            var nameParts = propName.Split('.');
-            if ( nameParts.Length == 1 )
-            {
-                return obj.GetType().GetProperty(propName).GetValue(obj, null);
-            }
-
-            foreach ( String part in nameParts )
-            {
-                if ( obj == null ) { return null; }
-
-                var type = obj.GetType();
-                var info = type.GetProperty(part);
-                if ( info == null ) { return null; }
-
-                obj = info.GetValue(obj, null);
-            }
-            return obj;
         }
     }
 }

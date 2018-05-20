@@ -1,12 +1,12 @@
 ﻿namespace QueryParser.Web
 {
-    public class QuerySort
+    public class SortCriteria
     {
         public string PropertyName { get; }
         public SortDirection SortDirection { get; }
         public int SortPosition { get; }
 
-        public QuerySort(string propName, int sortPosition, string sortDir = "asc")
+        public SortCriteria(string propName, int sortPosition, string sortDir = "asc")
         {
             PropertyName = propName;
             SortDirection = sortDir == "desc" ? SortDirection.Descending : SortDirection.Ascending;
@@ -14,5 +14,5 @@
         }
     }
 
-    public enum SortDirection { Ascending, Descending  }
+    public enum SortDirection { Ascending, Descending }
 }

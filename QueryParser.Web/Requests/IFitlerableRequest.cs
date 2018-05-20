@@ -5,7 +5,7 @@ namespace QueryParser.Web.Requests
 {
     public interface IFilterableRequest
     {
-        IEnumerable<QueryFilter> GetFilters();
+        IEnumerable<FilterCirteria> GetFilters();
         void SetQueryParams( IEnumerable<KeyValuePair<string, StringValues>> queryParams );
     }
 }

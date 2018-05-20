@@ -1,4 +1,5 @@
-﻿using QueryParser.Web.Requests;
+﻿using QueryParser.Web.ModelBinders;
+using QueryParser.Web.Requests;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,19 +14,15 @@ namespace QueryParser.Web.Data
             _query = query;
         }
 
-        public QueryBuilder<T> Filter(IEnumerable<QueryFilter> filters)
+        public QueryBuilder<T> Filter(IEnumerable<FilterCirteria> filters)
         {
             foreach ( var filter in filters )
-            {
-                _query = _query.Where(p => p
-                    .GetPropValue(filter.PropertyName)
-                    .ToString() == filter.Value);
-            }
+                _query = _query.Where(p => filter.Predicate(p, filter.Value));
 
             return this;
         }
 
-        public QueryBuilder<T> Sort(IEnumerable<QuerySort> sorts)
+        public QueryBuilder<T> Sort(IEnumerable<SortCriteria> sorts)
         {
             if ( !sorts.Any() )
                 return this;
@@ -41,11 +38,11 @@ namespace QueryParser.Web.Data
 
             _query = orderedQuery.AsQueryable();
 
-            IOrderedQueryable<T> ApplyOrderBy(QuerySort sort) => sort.SortDirection == SortDirection.Ascending ?
+            IOrderedQueryable<T> ApplyOrderBy(SortCriteria sort) => sort.SortDirection == SortDirection.Ascending ?
                 _query.OrderBy(x => x.GetPropValue(sort.PropertyName)) :
                 _query.OrderByDescending(x => x.GetPropValue(sort.PropertyName));
 
-            IOrderedQueryable<T> ApplyThenBy(QuerySort sort) => sort.SortDirection == SortDirection.Ascending ?
+            IOrderedQueryable<T> ApplyThenBy(SortCriteria sort) => sort.SortDirection == SortDirection.Ascending ?
                 orderedQuery.ThenBy(x => x.GetPropValue(sort.PropertyName)) :
                 orderedQuery.ThenByDescending(x => x.GetPropValue(sort.PropertyName));
 
