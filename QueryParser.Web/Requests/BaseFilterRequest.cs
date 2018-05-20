@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Primitives;
-using QueryParser.Web.ModelBinders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,14 +23,20 @@ namespace QueryParser.Web.Requests
         public bool HasSort => SortCriteria.Any();
 
         public IEnumerable<FilterCirteria<T>> Filters => _queryParams
-            .Where(f => FilterPredicateMap.ContainsKey(f.Key))
-            .Select(q => new FilterCirteria<T>(q.Value, FilterPredicateMap.GetValueOrDefault(q.Key)));
+            .Select(q =>
+            {
+                if ( FilterPredicateMap.TryGetValue(q.Key.ToLower(), out var predicate) )
+                    return new FilterCirteria<T>(q.Value, predicate);
+
+                return null;
+            })
+            .Where(f => f != null);
 
         public IEnumerable<SortCriteria<T>> SortCriteria => GetSorts();
 
         private IEnumerable<SortCriteria<T>> GetSorts()
         {
-            var sort = new List<SortCriteria<T>>(); ;
+            var sort = new List<SortCriteria<T>>();
             var sortParam = _queryParams
                 .Where(p => p.Key.ToLower() == "sort");
 
@@ -48,7 +53,7 @@ namespace QueryParser.Web.Requests
                 .Select((pair, position) =>
                 {
                     var parts = pair.Split(':');
-                    var sortField = parts[0];
+                    var sortField = parts[0].ToLower();
                     var sortDir = parts.Length == 2 ? parts[1] : "asc";
 
                     if ( SortKeySelectorMap.TryGetValue(sortField, out var selector) )
