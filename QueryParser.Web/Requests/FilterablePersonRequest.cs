@@ -10,13 +10,11 @@ namespace QueryParser.Web.Requests
         public override Dictionary<string, Func<Person, object, bool>> FilterPredicateMap =>
             new Dictionary<string, Func<Person, object, bool>>
             {
-                { "name", (person, value) => value is string 
-                    ? person.Name == value as string 
-                    : false
+                { "name", (person, value) => 
+                    value as string == person.Name
                 },
-                { "age", (person, value) => int.TryParse(value as string, out var age)
-                    ? person.Age == age
-                    : false
+                { "age", (person, value) => 
+                    int.TryParse(value as string, out var age) && person.Age == age
                 },
             };
 
