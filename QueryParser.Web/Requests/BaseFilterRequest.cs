@@ -11,7 +11,7 @@ namespace QueryParser.Web.Requests
         IEnumerable<KeyValuePair<string, StringValues>> _queryParams = new List<KeyValuePair<string, StringValues>>();
         IEnumerable<string> _propertyPaths;
 
-        public abstract Dictionary<string, Func<T, Func<object, bool>>> FilterPredicateMap { get; }
+        public abstract Dictionary<string, Func<object, Func<T, bool>>> FilterPredicateMap { get; }
         public abstract Dictionary<string, Expression<Func<T, object>>> SortKeySelectorMap { get; }
 
         public void SetQueryParams(IEnumerable<KeyValuePair<string, StringValues>> queryParams)
@@ -36,12 +36,12 @@ namespace QueryParser.Web.Requests
 
         private IEnumerable<SortCriteria<T>> GetSorts()
         {
-            var sort = new List<SortCriteria<T>>();
+            var sortCriteria = new List<SortCriteria<T>>();
             var sortParam = _queryParams
                 .Where(p => p.Key.ToLower() == "sort");
 
             if ( !sortParam.Any() )
-                return sort;
+                return sortCriteria;
 
             var sorts = sortParam
                 .First()
@@ -49,7 +49,7 @@ namespace QueryParser.Web.Requests
                 .ToString()
                 .Split(',');
 
-            sort = sorts
+            sortCriteria = sorts
                 .Select((pair, sortPosition) =>
                 {
                     var parts = pair.Split(':');
@@ -64,7 +64,7 @@ namespace QueryParser.Web.Requests
                 .Where(s => s != null)
                 .ToList();
 
-            return sort;
+            return sortCriteria;
         }
     }
 }

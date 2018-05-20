@@ -7,12 +7,14 @@ namespace QueryParser.Web.Requests
 {
     public class FilterablePersonRequest: BaseFilterRequest<Person>
     {
-        public override Dictionary<string, Func<Person, Func<object, bool>>> FilterPredicateMap =>
-            new Dictionary<string, Func<Person, Func<object, bool>>>
+        public override Dictionary<string, Func<object, Func<Person, bool>>> FilterPredicateMap =>
+            new Dictionary<string, Func<object, Func<Person, bool>>>
             {
-                { "name", person => FilterMatcher.StringExact(person.Name)
+                { "name", filterValue => person => 
+                    FilterMatchers.StringComplete(person.Name, filterValue)
                 },
-                { "age", person => FilterMatcher.Int32(person.Age)
+                { "age", filterValue => person => 
+                    FilterMatchers.Int32(person.Age, filterValue)
                 },
             };
 
@@ -31,26 +33,14 @@ namespace QueryParser.Web.Requests
     //    public override Dictionary<string, Expression<Func<Building, object>>> SortKeySelectorMap => throw new NotImplementedException();
     //}
 
-    public static class FilterMatcher
+    public static class FilterMatchers
     {
-        public static Func<object, bool> StringExact(string fieldValue)
-        {
-            return (object filterValue) =>
-             {
-                 return filterValue is string
-                 ? filterValue.ToString().ToLower() == fieldValue.ToLower()
-                 : false;
-             };
-        }
+        public static bool StringComplete(string fieldValue, object filterValue) =>
+            filterValue is string
+                && filterValue.ToString().ToLower() == fieldValue.ToLower();
 
-        public static Func<object, bool> Int32(int fieldValue)
-        {
-            return (object filterValue) =>
-            {
-                return int.TryParse(filterValue as string, out var filterValueAsInt)
-                ? filterValueAsInt == fieldValue
-                : false;
-            };
-        }
+        public static bool Int32(int fieldValue, object filterValue) =>
+            int.TryParse(filterValue as string, out var filterValueAsInt)
+                && filterValueAsInt == fieldValue;
     }
 }

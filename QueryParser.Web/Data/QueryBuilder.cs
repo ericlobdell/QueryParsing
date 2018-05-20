@@ -15,7 +15,7 @@ namespace QueryParser.Web.Data
         public QueryBuilder<T> Filter(IEnumerable<FilterCirteria<T>> filters)
         {
             foreach ( var filter in filters )
-                _query = _query.Where(p => filter.Predicate(p)(filter.Value));
+                _query = _query.Where(p => filter.Predicate(p));
 
             return this;
         }
