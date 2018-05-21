@@ -6,7 +6,7 @@ namespace QueryParser.Web
     {
         public Func<T, bool> Predicate { get; }
 
-        public FilterCirteria(object value, Func<object, Func<T, bool>> predicate)
+        public FilterCirteria(string value, Func<string, Func<T, bool>> predicate)
         {
             Predicate = predicate(value);
         }

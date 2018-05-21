@@ -7,8 +7,8 @@ namespace QueryParser.Web.Requests
 {
     public class FilterablePersonRequest: BaseFilterRequest<Person>
     {
-        public override Dictionary<string, Func<object, Func<Person, bool>>> FilterPredicateMap =>
-            new Dictionary<string, Func<object, Func<Person, bool>>>
+        public override Dictionary<string, Func<string, Func<Person, bool>>> FilterPredicateMap =>
+            new Dictionary<string, Func<string, Func<Person, bool>>>
             {
                 { "name", filterValue => person => 
                     FilterMatchers.StringComplete(person.Name, filterValue)
@@ -26,21 +26,34 @@ namespace QueryParser.Web.Requests
             };
     }
 
-    //public class FilterableBuildingRequest: BaseFilterRequest<Building>
-    //{
-    //    public override Dictionary<string, Func<Building, object, bool>> FilterPredicateMap => throw new NotImplementedException();
+    public class FilterableBuildingRequest: BaseFilterRequest<Building>
+    {
+        public override Dictionary<string, Func<string, Func<Building, bool>>> FilterPredicateMap =>
+            new Dictionary<string, Func<string, Func<Building, bool>>>
+            {
+                { "name", filterValue => building =>
+                    FilterMatchers.StringComplete(building.Name, filterValue)
+                },
+                { "floorcount", filterValue => building =>
+                    FilterMatchers.Int32(building.FloorCount, filterValue)
+                },
+            };
 
-    //    public override Dictionary<string, Expression<Func<Building, object>>> SortKeySelectorMap => throw new NotImplementedException();
-    //}
+        public override Dictionary<string, Expression<Func<Building, object>>> SortKeySelectorMap =>
+            new Dictionary<string, Expression<Func<Building, object>>>
+            {
+                { "name", building => building.Name },
+                { "age", building => building.FloorCount }
+            };
+    }
 
     public static class FilterMatchers
     {
-        public static bool StringComplete(string fieldValue, object filterValue) =>
-            filterValue is string
-                && filterValue.ToString().ToLower() == fieldValue.ToLower();
+        public static bool StringComplete(string fieldValue, string filterValue) =>
+            filterValue.ToLower() == fieldValue.ToLower();
 
-        public static bool Int32(int fieldValue, object filterValue) =>
-            int.TryParse(filterValue as string, out var filterValueAsInt)
+        public static bool Int32(int fieldValue, string filterValue) =>
+            int.TryParse(filterValue, out var filterValueAsInt)
                 && filterValueAsInt == fieldValue;
     }
 }

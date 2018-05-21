@@ -11,14 +11,14 @@ namespace QueryParser.Web.Controllers
         [Route("person")]
         public IActionResult Get(FilterablePersonRequest req)
         {
-            return Ok( req );
+            return Ok( req.FilterPredicateMap.Keys );
         }
 
         [HttpGet]
         [Route("building")]
         public IActionResult Get(FilterableBuildingRequest req)
         {
-            return Ok(req);
+            return Ok(req.FilterPredicateMap.Keys);
         }
 
         // GET api/values/5

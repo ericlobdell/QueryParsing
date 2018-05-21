@@ -11,7 +11,7 @@ namespace QueryParser.Web.Requests
         IEnumerable<KeyValuePair<string, StringValues>> _queryParams = new List<KeyValuePair<string, StringValues>>();
         IEnumerable<string> _propertyPaths;
 
-        public abstract Dictionary<string, Func<object, Func<T, bool>>> FilterPredicateMap { get; }
+        public abstract Dictionary<string, Func<string, Func<T, bool>>> FilterPredicateMap { get; }
         public abstract Dictionary<string, Expression<Func<T, object>>> SortKeySelectorMap { get; }
 
         public void SetQueryParams(IEnumerable<KeyValuePair<string, StringValues>> queryParams)

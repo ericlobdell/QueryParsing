@@ -12,10 +12,12 @@ namespace QueryParser.Web.Data
             _query = query;
         }
 
-        public QueryBuilder<T> Filter(IEnumerable<FilterCirteria<T>> filters)
+        public QueryBuilder<T> Filter(List<FilterCirteria<T>> filters)
         {
             foreach ( var filter in filters )
-                _query = _query.Where(p => filter.Predicate(p));
+                _query = _query
+                    .Where(filter.Predicate)
+                    .AsQueryable();
 
             return this;
         }
@@ -36,15 +38,17 @@ namespace QueryParser.Web.Data
 
             _query = orderedQuery.AsQueryable();
 
-            IOrderedQueryable<T> ApplyOrderBy(SortCriteria<T> sort) => sort.SortDirection == SortDirection.Ascending ?
-                _query.OrderBy(sort.KeySelector) :
-                _query.OrderByDescending(sort.KeySelector);
-
-            IOrderedQueryable<T> ApplyThenBy(SortCriteria<T> sort) => sort.SortDirection == SortDirection.Ascending ?
-                orderedQuery.ThenBy(sort.KeySelector) :
-                orderedQuery.ThenByDescending(sort.KeySelector);
-
             return this;
+
+            IOrderedQueryable<T> ApplyOrderBy(SortCriteria<T> sort) =>
+                sort.SortDirection == SortDirection.Ascending
+                    ? _query.OrderBy(sort.KeySelector)
+                    : _query.OrderByDescending(sort.KeySelector);
+
+            IOrderedQueryable<T> ApplyThenBy(SortCriteria<T> sort) =>
+                sort.SortDirection == SortDirection.Ascending
+                    ? orderedQuery.ThenBy(sort.KeySelector)
+                    : orderedQuery.ThenByDescending(sort.KeySelector);
         }
 
         public IQueryable<T> Build() => _query;
