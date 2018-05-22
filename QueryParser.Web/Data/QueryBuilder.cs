@@ -16,7 +16,7 @@ namespace QueryParser.Web.Data
         {
             foreach ( var filter in filters )
                 _query = _query
-                    .Where(filter.Predicate)
+                    .Where(x => filter.Predicate(x, filter.FilterValue))
                     .AsQueryable();
 
             return this;

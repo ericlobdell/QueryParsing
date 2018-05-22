@@ -4,11 +4,13 @@ namespace QueryParser.Web
 {
     public class FilterCirteria<T>
     {
-        public Func<T, bool> Predicate { get; }
+        public Func<T, string, bool> Predicate { get; }
+        public string FilterValue { get; set; }
 
-        public FilterCirteria(string value, Func<string, Func<T, bool>> predicate)
+        public FilterCirteria(string value, Func<T,string, bool> predicate)
         {
-            Predicate = predicate(value);
+            FilterValue = value;
+            Predicate = predicate;
         }
     }
 }
