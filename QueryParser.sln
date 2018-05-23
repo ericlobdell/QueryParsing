@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2043
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryParser.Tests", "QueryParser.Tests\QueryParser.Tests.csproj", "{16E604C9-E9C2-40A5-96C0-901D067A30AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QueryParser.Tests", "QueryParser.Tests\QueryParser.Tests.csproj", "{16E604C9-E9C2-40A5-96C0-901D067A30AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryParser.Web", "QueryParser.Web\QueryParser.Web.csproj", "{093657C3-549F-41EA-A896-D5851C2C0DDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QueryParser.Web", "QueryParser.Web\QueryParser.Web.csproj", "{093657C3-549F-41EA-A896-D5851C2C0DDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryableRequests", "QueryParser.Lib\QueryableRequests.csproj", "{AEDC0026-F49D-42B8-837C-256C7DAD01D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{093657C3-549F-41EA-A896-D5851C2C0DDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{093657C3-549F-41EA-A896-D5851C2C0DDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{093657C3-549F-41EA-A896-D5851C2C0DDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEDC0026-F49D-42B8-837C-256C7DAD01D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEDC0026-F49D-42B8-837C-256C7DAD01D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEDC0026-F49D-42B8-837C-256C7DAD01D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEDC0026-F49D-42B8-837C-256C7DAD01D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

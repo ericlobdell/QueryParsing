@@ -1,15 +1,15 @@
 ﻿using System;
 
-namespace QueryParser.Web
+namespace QueryableRequests.Criteria
 {
     public class FilterCirteria<T>
     {
         public Func<T, string, bool> Predicate { get; }
-        public string FilterValue { get; set; }
+        public string Value { get; }
 
         public FilterCirteria(string value, Func<T,string, bool> predicate)
         {
-            FilterValue = value;
+            Value = value;
             Predicate = predicate;
         }
     }

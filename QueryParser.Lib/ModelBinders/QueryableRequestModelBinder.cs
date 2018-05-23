@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using QueryParser.Web.Requests;
 using System;
 using System.Threading.Tasks;
 
-namespace QueryParser.Web.ModelBinders
+namespace QueryableRequests.ModelBinders
 {
-    public class FilteredRequestModelBinder: IModelBinder
+    public class QueryableRequestModelBinder: IModelBinder
     {
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            var model = Activator.CreateInstance(bindingContext.ModelMetadata.ModelType) as IFilterableRequest;
+            var model = Activator.CreateInstance(bindingContext.ModelMetadata.ModelType) as IQueryableRequest;
 
             if ( model == null )
                 return Task.CompletedTask;

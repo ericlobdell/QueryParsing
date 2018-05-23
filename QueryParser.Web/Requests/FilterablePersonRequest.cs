@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
+﻿using QueryableRequests;
 using QueryParser.Web.Models;
 
 namespace QueryParser.Web.Requests
 {
-    public class FilterablePersonRequest: BaseFilterRequest<Person>
+    public class FilterablePersonRequest: QueryableRequest<Person>
     {
         public FilterablePersonRequest()
         {
@@ -14,28 +12,10 @@ namespace QueryParser.Web.Requests
 
             HandleFilter("age", (person, filterValue) =>
                 FilterMatchers.Int32(person.Age, filterValue));
+
+            HandleSort("name", person => person.Name);
+
+            HandleSort("age", person => person.Age);
         }
-        
-        //public override Dictionary<string, Expression<Func<Person, object>>> SortKeySelectorMap =>
-        //    new Dictionary<string, Expression<Func<Person, object>>>
-        //    {
-        //        { "name", person => person.Name },
-        //        { "age", person => person.Age }
-        //    };
-    }
-
-    public class FilterableBuildingRequest: BaseFilterRequest<Building>
-    {
-        
-    }
-
-    public static class FilterMatchers
-    {
-        public static bool StringComplete(string fieldValue, string filterValue) =>
-            filterValue.ToLower() == fieldValue.ToLower();
-
-        public static bool Int32(int fieldValue, string filterValue) =>
-            int.TryParse(filterValue, out var filterValueAsInt)
-                && filterValueAsInt == fieldValue;
     }
 }

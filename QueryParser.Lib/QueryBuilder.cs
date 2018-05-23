@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using QueryableRequests.Criteria;
+using System.Collections.Generic;
 using System.Linq;
 
-namespace QueryParser.Web.Data
+namespace QueryableRequests
 {
     public class QueryBuilder<T>
     {
@@ -16,7 +17,7 @@ namespace QueryParser.Web.Data
         {
             foreach ( var filter in filters )
                 _query = _query
-                    .Where(x => filter.Predicate(x, filter.FilterValue))
+                    .Where(x => filter.Predicate(x, filter.Value))
                     .AsQueryable();
 
             return this;

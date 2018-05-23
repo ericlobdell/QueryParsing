@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace QueryParser.Web
+namespace QueryableRequests.Criteria
 {
     public class SortCriteria<T>
     {

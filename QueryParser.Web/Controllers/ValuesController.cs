@@ -14,13 +14,6 @@ namespace QueryParser.Web.Controllers
             return Ok( req );
         }
 
-        [HttpGet]
-        [Route("building")]
-        public IActionResult Get(FilterableBuildingRequest req)
-        {
-            return Ok(req);
-        }
-
         // GET api/values/5
         [HttpGet("{id}")]
         public string Get(int id)

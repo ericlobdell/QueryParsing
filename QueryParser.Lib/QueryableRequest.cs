@@ -1,12 +1,13 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.Extensions.Primitives;
+using QueryableRequests.Criteria;
 
-namespace QueryParser.Web.Requests
+namespace QueryableRequests
 {
-    public abstract class BaseFilterRequest<T>: IFilterableRequest
+    public class QueryableRequest<T>: IQueryableRequest
     {
         IEnumerable<KeyValuePair<string, StringValues>> _queryParams = new List<KeyValuePair<string, StringValues>>();
         IEnumerable<string> _propertyPaths;
@@ -16,15 +17,15 @@ namespace QueryParser.Web.Requests
         protected void HandleFilter(string filterKey, Func<T, string, bool> filterHandler) =>
             FilterPredicateMap.Add(filterKey, filterHandler);
 
-        protected Dictionary<string, Expression<Func<T, object>>> SortKeySelectorMap { get; }
+        protected Dictionary<string, Expression<Func<T, object>>> SortKeySelectorMap { get; } = new Dictionary<string, Expression<Func<T, object>>>();
+
+        protected void HandleSort(string sortKey, Expression<Func<T, object>> keySelector) =>
+            SortKeySelectorMap.Add(sortKey, keySelector);
 
         public void SetQueryParams(IEnumerable<KeyValuePair<string, StringValues>> queryParams)
         {
             _queryParams = queryParams;
         }
-
-        public bool HasFilters => Filters.Any();
-        public bool HasSort => SortCriteria.Any();
 
         public List<FilterCirteria<T>> Filters => _queryParams
             .Select(q =>

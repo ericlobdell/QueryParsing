@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using QueryParser.Web.ModelBinders;
+using QueryableRequests.ModelBinders;
 
 namespace QueryParser.Web
 {
@@ -20,7 +20,7 @@ namespace QueryParser.Web
         {
             services.AddMvc(options =>
             {
-                options.ModelBinderProviders.Insert( 0, new FilteredRequestModelBinderProvider() );
+                options.ModelBinderProviders.Insert( 0, new QueryableRequestModelBinderProvider() );
             } );
         }
 

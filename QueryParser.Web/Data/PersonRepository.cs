@@ -1,4 +1,5 @@
-﻿using QueryParser.Web.Models;
+﻿using QueryableRequests;
+using QueryParser.Web.Models;
 using QueryParser.Web.Requests;
 using System.Collections.Generic;
 using System.Linq;
