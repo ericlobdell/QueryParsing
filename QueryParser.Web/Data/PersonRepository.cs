@@ -20,7 +20,7 @@ namespace QueryParser.Web.Data
             _db.SaveChanges();
         }
 
-        public IEnumerable<Person> Get(FilterablePersonRequest request)
+        public IEnumerable<Person> Get(QueryablePersonRequest request)
         {
             var query = new QueryBuilder<Person>(_db.Person)
                 .Filter(request.Filters)

@@ -13,7 +13,7 @@ namespace QueryableRequests
             _query = query;
         }
 
-        public QueryBuilder<T> Filter(List<FilterCirteria<T>> filters)
+        public QueryBuilder<T> Filter(IEnumerable<FilterCirteria<T>> filters)
         {
             foreach ( var filter in filters )
                 _query = _query

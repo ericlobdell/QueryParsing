@@ -9,7 +9,7 @@ namespace QueryParser.Web.Controllers
         // GET api/values
         [HttpGet]
         [Route("person")]
-        public IActionResult Get(FilterablePersonRequest req)
+        public IActionResult Get(QueryablePersonRequest req)
         {
             return Ok( req );
         }

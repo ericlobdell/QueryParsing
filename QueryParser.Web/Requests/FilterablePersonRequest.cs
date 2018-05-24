@@ -3,9 +3,9 @@ using QueryParser.Web.Models;
 
 namespace QueryParser.Web.Requests
 {
-    public class FilterablePersonRequest: QueryableRequest<Person>
+    public class QueryablePersonRequest: QueryableRequest<Person>
     {
-        public FilterablePersonRequest()
+        public QueryablePersonRequest()
         {
             HandleFilter("name", filterValue => person =>
                 FilterMatchers.StringComplete(person.Name, filterValue));
