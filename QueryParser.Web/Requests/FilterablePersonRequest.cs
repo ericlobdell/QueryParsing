@@ -7,10 +7,10 @@ namespace QueryParser.Web.Requests
     {
         public FilterablePersonRequest()
         {
-            HandleFilter("name", (person, filterValue) =>
+            HandleFilter("name", filterValue => person =>
                 FilterMatchers.StringComplete(person.Name, filterValue));
 
-            HandleFilter("age", (person, filterValue) =>
+            HandleFilter("age", filterValue => person =>
                 FilterMatchers.Int32(person.Age, filterValue));
 
             HandleSort("name", person => person.Name);

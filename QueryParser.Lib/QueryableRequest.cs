@@ -12,9 +12,9 @@ namespace QueryableRequests
         IEnumerable<KeyValuePair<string, StringValues>> _queryParams = new List<KeyValuePair<string, StringValues>>();
         IEnumerable<string> _propertyPaths;
 
-        protected Dictionary<string, Func<T, string, bool>> FilterPredicateMap { get; } = new Dictionary<string, Func<T, string, bool>>();
+        protected Dictionary<string, Func<string, Func<T, bool>>> FilterPredicateMap { get; } = new Dictionary<string, Func<string, Func<T, bool>>>();
 
-        protected void HandleFilter(string filterKey, Func<T, string, bool> filterHandler) =>
+        protected void HandleFilter(string filterKey, Func<string, Func<T, bool>> filterHandler) =>
             FilterPredicateMap.Add(filterKey, filterHandler);
 
         protected Dictionary<string, Expression<Func<T, object>>> SortKeySelectorMap { get; } = new Dictionary<string, Expression<Func<T, object>>>();

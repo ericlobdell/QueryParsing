@@ -17,7 +17,7 @@ namespace QueryableRequests
         {
             foreach ( var filter in filters )
                 _query = _query
-                    .Where(x => filter.Predicate(x, filter.Value))
+                    .Where(filter.Predicate)
                     .AsQueryable();
 
             return this;
