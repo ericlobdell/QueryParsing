@@ -1,10 +1,13 @@
-﻿using QueryableRequests.Criteria;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+using QueryableRequests.Criteria;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace QueryableRequests
 {
     public class QueryBuilder<T>
+        where T : class
     {
         IQueryable<T> _query;
 
@@ -52,6 +55,22 @@ namespace QueryableRequests
                     : orderedQuery.ThenByDescending(sort.KeySelector);
         }
 
+        public QueryBuilder<T> Include(IEnumerable<IncludeCriteria<T>> includes)
+        {
+            var includableQueryable = _query as IIncludableQueryable<T,object>;
+
+            foreach ( var i in includes )
+            {
+                includableQueryable = includableQueryable.Include(i.KeySelector);
+            }
+
+            _query = includableQueryable.AsQueryable();
+
+            return this;
+        }
+
         public IQueryable<T> Build() => _query;
     }
+
+    
 }

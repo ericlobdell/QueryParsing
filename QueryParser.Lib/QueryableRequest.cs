@@ -56,6 +56,33 @@ namespace QueryableRequests
             .Where(s => s != null)
             .ToList();
 
+        public List<IncludeCriteria<T>> Includes => GetIncludes()
+            .Select(include =>
+            {
+                if ( IncludeKeySelectorMap.TryGetValue(include, out var keySelector) )
+                    return new IncludeCriteria<T>(keySelector);
+
+                return null;
+            })
+            .Where(s => s != null)
+            .ToList();
+
+        private List<string> GetIncludes()
+        {
+            var includeParam = _queryParams
+                .Where(p => p.Key.ToLower() == "include");
+
+            if ( !includeParam.Any() )
+                return new List<string>();
+
+            return includeParam
+                .First()
+                .Value
+                .ToString()
+                .Split(',')
+                .ToList();
+        }
+
         private List<(string Field, string Direction)> GetSortInfos()
         {
             var sortParam = _queryParams
