@@ -57,12 +57,18 @@ namespace QueryableRequests
 
         public QueryBuilder<T> Include(IEnumerable<IncludeCriteria<T>> includes)
         {
-            var includableQueryable = _query as IIncludableQueryable<T,object>;
+            if ( !includes.Any() )
+                return this;
 
-            foreach ( var i in includes )
-            {
+            var dbSet = _query as DbSet<T>;
+
+            var firstInclude = includes.First();
+            var remainingInclujdes = includes.Skip(1);
+
+            IIncludableQueryable<T, object> includableQueryable = dbSet.Include(firstInclude.KeySelector);
+
+            foreach ( var i in remainingInclujdes )
                 includableQueryable = includableQueryable.Include(i.KeySelector);
-            }
 
             _query = includableQueryable.AsQueryable();
 

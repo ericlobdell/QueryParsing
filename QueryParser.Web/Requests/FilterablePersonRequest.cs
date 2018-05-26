@@ -16,6 +16,9 @@ namespace QueryParser.Web.Requests
             HandleSort("name", person => person.Name);
 
             HandleSort("age", person => person.Age);
+
+            HandleInclude("pets", person => person.Pets);
+            HandleInclude("car", person => person.Car);
         }
     }
 }

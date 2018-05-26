@@ -1,4 +1,6 @@
-﻿namespace QueryParser.Web.Models
+﻿using System.Collections.Generic;
+
+namespace QueryParser.Web.Models
 {
     public class Person
     {
@@ -9,6 +11,8 @@
         public int GetId() => Id;
         private string Secret { get; set; }
         public Foo Foo { get; set; }
+        public List<Pet> Pets { get; set; }
+        public Car Car { get; set; }
     }
 
     public class Foo
