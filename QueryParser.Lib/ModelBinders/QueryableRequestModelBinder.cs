@@ -13,8 +13,7 @@ namespace QueryableRequests.ModelBinders
             if ( model == null )
                 return Task.CompletedTask;
 
-            var query = bindingContext.HttpContext.Request.Query;
-            model.SetQueryParams(query);
+            model.SetQueryParams(bindingContext.HttpContext.Request.Query);
 
             bindingContext.Result = ModelBindingResult.Success(model);
 
