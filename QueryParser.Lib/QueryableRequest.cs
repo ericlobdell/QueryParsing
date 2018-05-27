@@ -14,19 +14,19 @@ namespace QueryableRequests
         protected Dictionary<string, Func<string, Func<T, bool>>> FilterPredicateMap { get; } =
             new Dictionary<string, Func<string, Func<T, bool>>>();
 
-        protected void HandleFilter(string filterKey, Func<string, Func<T, bool>> filterHandler) =>
+        protected void Filter(string filterKey, Func<string, Func<T, bool>> filterHandler) =>
             FilterPredicateMap.Add(filterKey, filterHandler);
 
         protected Dictionary<string, Expression<Func<T, object>>> SortKeySelectorMap { get; } =
             new Dictionary<string, Expression<Func<T, object>>>();
 
-        protected void HandleSort(string sortKey, Expression<Func<T, object>> keySelector) =>
+        protected void Sort(string sortKey, Expression<Func<T, object>> keySelector) =>
             SortKeySelectorMap.Add(sortKey, keySelector);
 
         protected Dictionary<string, Expression<Func<T, object>>> IncludeKeySelectorMap { get; } =
             new Dictionary<string, Expression<Func<T, object>>>();
 
-        protected void HandleInclude(string sortKey, Expression<Func<T, object>> keySelector) =>
+        protected void Include(string sortKey, Expression<Func<T, object>> keySelector) =>
             IncludeKeySelectorMap.Add(sortKey, keySelector);
 
         public void SetQueryParams(IEnumerable<KeyValuePair<string, StringValues>> queryParams)

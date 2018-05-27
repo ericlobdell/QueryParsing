@@ -36,7 +36,7 @@ namespace QueryParser.Tests
             var sut = GetSut();
             sut.Add(david, tom);
 
-            var queryString = $"?name={tom.Name}&bar={tom.Foo.Bar}&include=pets,car";
+            var queryString = $"?name={tom.Name}&bar={tom.Foo.Bar}&include=pets,car&sort=name";
             var parsedQuery = QueryHelpers.ParseQuery(queryString);
             var request = new QueryablePersonRequest();
             request.SetQueryParams(parsedQuery);
@@ -44,7 +44,7 @@ namespace QueryParser.Tests
             var results = sut.Get(request);
 
             Assert.Contains(results, p => p.Name == tom.Name);
-            Assert.DoesNotContain(results, p => p.Name == david.Name);
+            Assert.DoesNotContain(results, p => p.Name == david.Name); 
         }
     }
 }

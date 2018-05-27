@@ -7,18 +7,18 @@ namespace QueryParser.Web.Requests
     {
         public QueryablePersonRequest()
         {
-            HandleFilter("name", filterValue => person =>
+            Filter("name", filterValue => person =>
                 FilterMatchers.StringComplete(person.Name, filterValue));
 
-            HandleFilter("age", filterValue => person =>
+            Filter("age", filterValue => person =>
                 FilterMatchers.Int32(person.Age, filterValue));
 
-            HandleSort("name", person => person.Name);
+            Sort("name", person => person.Name);
 
-            HandleSort("age", person => person.Age);
+            Sort("age", person => person.Age);
 
-            HandleInclude("pets", person => person.Pets);
-            HandleInclude("car", person => person.Car);
+            Include("pets", person => person.Pets);
+            Include("car", person => person.Car);
         }
     }
 }

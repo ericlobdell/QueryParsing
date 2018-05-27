@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using QueryableRequests.Criteria;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace QueryableRequests
 {
-    public class QueryBuilder<T>
+    public class QueryBuilder<T> : IIncrementalQueryBuilder<T>, ICompleteQueryBuilder<T>
         where T : class
     {
         IQueryable<T> _query;
@@ -16,7 +15,7 @@ namespace QueryableRequests
             _query = query;
         }
 
-        public QueryBuilder<T> Filter(IEnumerable<FilterCirteria<T>> filters)
+        public IIncrementalQueryBuilder<T> Filter(IEnumerable<FilterCirteria<T>> filters)
         {
             foreach ( var filter in filters )
                 _query = _query
@@ -26,7 +25,7 @@ namespace QueryableRequests
             return this;
         }
 
-        public QueryBuilder<T> Sort(IEnumerable<SortCriteria<T>> sorts)
+        public IIncrementalQueryBuilder<T> Sort(IEnumerable<SortCriteria<T>> sorts)
         {
             if ( !sorts.Any() )
                 return this;
@@ -35,12 +34,12 @@ namespace QueryableRequests
             var firstSort = orderedSorts.First();
             var remainingSorts = orderedSorts.Skip(1);
 
-            var orderedQuery = ApplyOrderBy(firstSort);
+            var orderedQueryable = ApplyOrderBy(firstSort);
 
             foreach ( var s in remainingSorts )
-                orderedQuery = ApplyThenBy(s);
+                orderedQueryable = ApplyThenBy(s);
 
-            _query = orderedQuery.AsQueryable();
+            _query = orderedQueryable.AsQueryable();
 
             return this;
 
@@ -51,11 +50,11 @@ namespace QueryableRequests
 
             IOrderedQueryable<T> ApplyThenBy(SortCriteria<T> sort) =>
                 sort.SortDirection == SortDirection.Ascending
-                    ? orderedQuery.ThenBy(sort.KeySelector)
-                    : orderedQuery.ThenByDescending(sort.KeySelector);
+                    ? orderedQueryable.ThenBy(sort.KeySelector)
+                    : orderedQueryable.ThenByDescending(sort.KeySelector);
         }
 
-        public QueryBuilder<T> Include(IEnumerable<IncludeCriteria<T>> includes)
+        public IIncrementalQueryBuilder<T> Include(IEnumerable<IncludeCriteria<T>> includes)
         {
             if ( !includes.Any() )
                 return this;
@@ -65,7 +64,7 @@ namespace QueryableRequests
             var firstInclude = includes.First();
             var remainingInclujdes = includes.Skip(1);
 
-            IIncludableQueryable<T, object> includableQueryable = dbSet.Include(firstInclude.KeySelector);
+            var includableQueryable = dbSet.Include(firstInclude.KeySelector);
 
             foreach ( var i in remainingInclujdes )
                 includableQueryable = includableQueryable.Include(i.KeySelector);
@@ -76,7 +75,30 @@ namespace QueryableRequests
         }
 
         public IQueryable<T> Build() => _query;
+
+        public IQueryable<T> Build<TRequest>(TRequest req)
+            where TRequest : QueryableRequest<T>
+        {
+            return new QueryBuilder<T>(_query)
+                .Include(req.Includes)
+                .Filter(req.Filters)
+                .Sort(req.SortCriteria)
+                .Build();
+        }
     }
 
-    
+    public interface IIncrementalQueryBuilder<T>
+        where T : class
+    {
+        IIncrementalQueryBuilder<T> Include(IEnumerable<IncludeCriteria<T>> includes);
+        IIncrementalQueryBuilder<T> Sort(IEnumerable<SortCriteria<T>> sorts);
+        IIncrementalQueryBuilder<T> Filter(IEnumerable<FilterCirteria<T>> filters);
+        IQueryable<T> Build();
+    }
+
+    public interface ICompleteQueryBuilder<T>
+    {
+        IQueryable<T> Build<TRequest>(TRequest req)
+            where TRequest : QueryableRequest<T>;
+    }
 }
