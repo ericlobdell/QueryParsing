@@ -15,27 +15,19 @@ namespace QueryableRequests
             new Dictionary<string, Func<string, Func<T, bool>>>();
 
         protected void Filter(string filterKey, Func<string, Func<T, bool>> filterHandler) =>
-            AddOrOverWrite(filterKey, filterHandler, FilterPredicateMap);
+            FilterPredicateMap.Upsert(filterKey, filterHandler);
 
         private Dictionary<string, Expression<Func<T, object>>> SortKeySelectorMap { get; } =
             new Dictionary<string, Expression<Func<T, object>>>();
 
         protected void Sort(string sortKey, Expression<Func<T, object>> keySelector) =>
-            AddOrOverWrite(sortKey, keySelector, SortKeySelectorMap);
+            SortKeySelectorMap.Upsert(sortKey, keySelector);
         
         private Dictionary<string, Expression<Func<T, object>>> IncludeKeySelectorMap { get; } =
             new Dictionary<string, Expression<Func<T, object>>>();
 
         protected void Include(string sortKey, Expression<Func<T, object>> keySelector) =>
-            AddOrOverWrite(sortKey, keySelector, IncludeKeySelectorMap);
-
-        private void AddOrOverWrite<TValue>(string key, TValue value, IDictionary<string,TValue> dict)
-        {
-            if ( dict.ContainsKey(key) )
-                dict[key] = value;
-            else
-                dict.Add(key, value);
-        }
+            IncludeKeySelectorMap.Upsert(sortKey, keySelector);
 
         public void SetQueryParams(IEnumerable<KeyValuePair<string, StringValues>> queryParams)
         {
@@ -113,6 +105,17 @@ namespace QueryableRequests
                     return (sortField, sortDirection);
                 })
                 .ToList();
+        }
+    }
+
+    public static class QuerableExtensions
+    {
+        public static void Upsert<TValue>(this IDictionary<string, TValue> dict, string key, TValue value)
+        {
+            if ( dict.ContainsKey(key) )
+                dict[key] = value;
+            else
+                dict.Add(key, value);
         }
     }
 }
