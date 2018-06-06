@@ -11,23 +11,31 @@ namespace QueryableRequests
     {
         IEnumerable<KeyValuePair<string, StringValues>> _queryParams = new List<KeyValuePair<string, StringValues>>();
 
-        protected Dictionary<string, Func<string, Func<T, bool>>> FilterPredicateMap { get; } =
+        private Dictionary<string, Func<string, Func<T, bool>>> FilterPredicateMap { get; } =
             new Dictionary<string, Func<string, Func<T, bool>>>();
 
         protected void Filter(string filterKey, Func<string, Func<T, bool>> filterHandler) =>
-            FilterPredicateMap.Add(filterKey, filterHandler);
+            AddOrOverWrite(filterKey, filterHandler, FilterPredicateMap);
 
-        protected Dictionary<string, Expression<Func<T, object>>> SortKeySelectorMap { get; } =
+        private Dictionary<string, Expression<Func<T, object>>> SortKeySelectorMap { get; } =
             new Dictionary<string, Expression<Func<T, object>>>();
 
         protected void Sort(string sortKey, Expression<Func<T, object>> keySelector) =>
-            SortKeySelectorMap.Add(sortKey, keySelector);
-
-        protected Dictionary<string, Expression<Func<T, object>>> IncludeKeySelectorMap { get; } =
+            AddOrOverWrite(sortKey, keySelector, SortKeySelectorMap);
+        
+        private Dictionary<string, Expression<Func<T, object>>> IncludeKeySelectorMap { get; } =
             new Dictionary<string, Expression<Func<T, object>>>();
 
         protected void Include(string sortKey, Expression<Func<T, object>> keySelector) =>
-            IncludeKeySelectorMap.Add(sortKey, keySelector);
+            AddOrOverWrite(sortKey, keySelector, IncludeKeySelectorMap);
+
+        private void AddOrOverWrite<TValue>(string key, TValue value, IDictionary<string,TValue> dict)
+        {
+            if ( dict.ContainsKey(key) )
+                dict[key] = value;
+            else
+                dict.Add(key, value);
+        }
 
         public void SetQueryParams(IEnumerable<KeyValuePair<string, StringValues>> queryParams)
         {
@@ -38,7 +46,7 @@ namespace QueryableRequests
             .Select(q =>
             {
                 if ( FilterPredicateMap.TryGetValue(q.Key.ToLower(), out var predicate) )
-                    return new FilterCirteria<T>(q.Value, predicate);
+                    return new FilterCirteria<T>(q.Key, q.Value, predicate);
 
                 return null;
             })
@@ -49,7 +57,7 @@ namespace QueryableRequests
             .Select((sortInfo, sortPosition) =>
             {
                 if ( SortKeySelectorMap.TryGetValue(sortInfo.Field, out var keySelector) )
-                    return new SortCriteria<T>(sortPosition, keySelector, sortInfo.Direction);
+                    return new SortCriteria<T>(sortInfo.Field, sortPosition, keySelector, sortInfo.Direction);
 
                 return null;
             })

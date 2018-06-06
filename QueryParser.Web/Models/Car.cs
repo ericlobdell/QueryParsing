@@ -8,6 +8,6 @@ namespace QueryParser.Web.Models
     public class Car
     {
         public int Id { get; set; }
-        public int Model { get; set; }
+        public string Model { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace QueryableRequests
     {
         IQueryable<T> _query;
 
-        public QueryBuilder(IQueryable<T> query)
+        public QueryBuilder(DbSet<T> query)
         {
             _query = query;
         }
@@ -79,7 +79,7 @@ namespace QueryableRequests
         public IQueryable<T> Build<TRequest>(TRequest req)
             where TRequest : QueryableRequest<T>
         {
-            return new QueryBuilder<T>(_query)
+            return new QueryBuilder<T>(_query as DbSet<T>)
                 .Include(req.Includes)
                 .Filter(req.Filters)
                 .Sort(req.SortCriteria)

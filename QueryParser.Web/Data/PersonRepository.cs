@@ -23,7 +23,10 @@ namespace QueryParser.Web.Data
         public IEnumerable<Person> Get(QueryablePersonRequest request)
         {
             var query = new QueryBuilder<Person>(_db.Person)
-                .Build(request);
+                .Include(request.Includes)
+                .Filter(request.Filters)
+                .Sort(request.SortCriteria)
+                .Build();
 
             return query.ToList();
         }
